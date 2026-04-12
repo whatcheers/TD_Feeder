@@ -119,7 +119,11 @@ async function main() {
   }
 
   await mkdir(OUT_DIR, { recursive: true });
-  await writeFile(OUT_FILE, feed.rss2(), 'utf8');
+  // The `feed` library does not escape `&` in URLs/attributes, producing
+  // invalid XML when enclosure URLs contain query-string parameters.
+  // Fix by escaping any bare `&` that isn't already part of an XML entity.
+  const rss = feed.rss2().replace(/&(?!amp;|lt;|gt;|apos;|quot;|#\d+;|#x[\da-fA-F]+;)/g, '&amp;');
+  await writeFile(OUT_FILE, rss, 'utf8');
 
   const publicCount = items.filter((i) => i.source === 'public').length;
   const patreonCount = items.filter((i) => i.source === 'patreon').length;
