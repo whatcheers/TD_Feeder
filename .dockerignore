@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+data/
+.git/
+.gitignore
+.env*
+*.log
+.DS_Store
+coverage/
+README.md
+testfeed.ts
+getfeed.ts
+metadata.json

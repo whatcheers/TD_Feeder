@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Settings, Play, Pause, Clock, Podcast, Lock, Search, ArrowDownUp } from 'lucide-react';
+import { Settings, Play, Pause, Clock, Podcast, Lock, Search, ArrowDownUp, Rss, Check } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { cn } from './lib/utils';
 
@@ -35,6 +35,7 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [searchQuery, setSearchQuery] = useState('');
+  const [copiedFeed, setCopiedFeed] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -118,6 +119,17 @@ export default function App() {
         audioRef.current.play();
       }
       setIsPlaying(!isPlaying);
+    }
+  };
+
+  const copyFeedUrl = async () => {
+    const url = `${window.location.origin}/main.rss`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedFeed(true);
+      setTimeout(() => setCopiedFeed(false), 2000);
+    } catch {
+      window.prompt('Copy this feed URL:', url);
     }
   };
 
@@ -224,6 +236,18 @@ export default function App() {
               title="Toggle sort order"
             >
               <ArrowDownUp size={20} />
+            </button>
+            <button
+              onClick={copyFeedUrl}
+              className={cn(
+                "p-2 rounded-full transition-colors",
+                copiedFeed
+                  ? "text-emerald-400 bg-emerald-500/10"
+                  : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900"
+              )}
+              title={copiedFeed ? "Copied!" : "Copy combined feed URL"}
+            >
+              {copiedFeed ? <Check size={20} /> : <Rss size={20} />}
             </button>
             <button
               onClick={() => setIsConfiguring(true)}
