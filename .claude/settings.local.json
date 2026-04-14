@@ -5,7 +5,8 @@
       "Bash(curl -s -o /tmp/audioboom.rss \"https://audioboom.com/channels/5093219.rss\")",
       "Bash(python3 -c ':*)",
       "Bash(node --experimental-strip-types -e ':*)",
-      "Bash(node --experimental-strip-types ingest.ts)"
+      "Bash(node --experimental-strip-types ingest.ts)",
+      "Bash(npm run:*)"
     ]
   }
 }
