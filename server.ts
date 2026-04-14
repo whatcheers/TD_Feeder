@@ -3,6 +3,7 @@ import { createServer as createViteServer } from 'vite';
 import Parser from 'rss-parser';
 import path from 'path';
 import * as dns from 'dns/promises';
+import { execFile } from 'child_process';
 
 /** Reject URLs that point to private/reserved IP ranges. */
 function isPrivateIP(ip: string): boolean {
@@ -89,6 +90,19 @@ async function startServer() {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
+
+  // Re-run ingest every 12 hours to pick up new episodes
+  const TWELVE_HOURS = 12 * 60 * 60 * 1000;
+  setInterval(() => {
+    console.log('Running scheduled ingest...');
+    execFile('node', ['--experimental-strip-types', 'ingest.ts'], { cwd: process.cwd() }, (err, stdout, stderr) => {
+      if (err) {
+        console.error('Scheduled ingest failed:', stderr || err.message);
+      } else {
+        console.log(stdout.trim());
+      }
+    });
+  }, TWELVE_HOURS);
 }
 
 startServer();
